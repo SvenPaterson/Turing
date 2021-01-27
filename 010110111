@@ -1,6 +1,6 @@
 """
 Script builds a turing machine from first example of such provided in his
-ground breaking paper on Computability. Outputs the conituous number of
+ground breaking paper on Computability. Outputs the continuous number of
 ever increasing digits of 1 between digits of single 0's:
 
 01011011101111011111... etc.
