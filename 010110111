@@ -1,0 +1,105 @@
+"""
+Script builds a turing machine from first example of such provided in his
+ground breaking paper on Computability. Outputs the conituous number of
+ever increasing digits of 1 between digits of single 0's:
+
+01011011101111011111... etc.
+
+by Stephen Garden 1-
+"""
+
+from time import sleep
+
+RES_LEN = 200 # desired length of result
+STEP_TIME = 0 # delay between operations, not required if continuosly printing
+
+
+# Turing Machine Config Behaviour
+m_con = {}
+m_con['b'] = ((' ', ['Pe', 'R', 'Pe', 'R', 'P0', 'R', 'R', 'P0', 'L', 'L'], 'a'),)
+m_con['a'] = (('1', ['R', 'Px', 'L', 'L', 'L'], 'a'),
+              ('0', [], 'q'))
+m_con['q'] = (('any', ['R', 'R'], 'q'),
+              ('none', ['P1', 'L'], 'p'))
+m_con['p'] = (('x', ['E', 'R'], 'q'),
+              ('e', ['R'], 'f'),
+              ('none', ['L', 'L'], 'p'))
+m_con['f'] = (('any', ['R', 'R'], 'f'),
+              ('none', ['P0', 'L', 'L'], 'a'))
+
+
+def run_op(op_list):
+    """ Run operation logic based on Turings 1st example
+    of a circle-free machine. Example pulled from
+    The Annotated Turing: A Guided Tour Through Alan Turing's
+    Historic Paper on Computability and the Turing Machine - 
+    Charles Petzold
+
+    IN
+    op_list: operation list based on current reading from tape_head
+    OUT
+    global var manipulation
+    """
+    global tape_head, tape, next_config
+    
+    for op in op_list[1]:
+        if op == 'L':
+            tape_head -= 1
+        if op == 'R':
+            tape_head += 1
+        if op == 'Pe':
+            tape[tape_head] = 'e'
+        if op == 'Px':
+            tape[tape_head] = 'x'
+        if op == 'P0':
+            tape[tape_head] = '0'
+            tape.append(' ')
+            tape.append(' ')
+        if op == 'P1':
+            tape[tape_head] = '1'
+            tape.append(' ')
+            tape.append(' ')
+        if op == 'E':
+            tape[tape_head] = ' '
+        if op == ' ':
+            pass
+
+    next_config = op_list[2]
+    print(''.join(tape))
+    sleep(STEP_TIME)
+
+
+tape = [' ']*5
+tape_head = 0
+next_config = 'b' # initiate turing machine for blank tape
+
+while len(tape) < RES_LEN:
+    
+    if next_config == 'b':
+        run_op(m_con[next_config][0])
+
+    if next_config == 'a':
+        if tape[tape_head] == '1':
+            run_op(m_con[next_config][0])
+        
+        if tape[tape_head] == '0':
+            run_op(m_con[next_config][1])
+
+    if next_config == 'q' or next_config == 'f':
+        if tape[tape_head] == '1' or tape[tape_head] == '0':
+            run_op(m_con[next_config][0])
+
+        if tape[tape_head] == ' ':
+            run_op(m_con[next_config][1])
+
+    if next_config == 'p':
+        if tape[tape_head] == 'x':
+            run_op(m_con[next_config][0])
+    
+        if tape[tape_head] == 'e':
+            run_op(m_con[next_config][1])
+
+        if tape[tape_head] == ' ':
+            run_op(m_con[next_config][2])
+     
+    sleep(STEP_TIME)
